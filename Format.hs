@@ -67,7 +67,7 @@ formatANSI = formatByDiff diff where
     start :: [Style] -> [Style] -> [String]
     start ss ss' = concatMap (take 1) [
         ["1" | Bold      <- ss', not $ elem Bold      ss],
-        ["3" | Underline <- ss', not $ elem Underline ss],
+        ["4" | Underline <- ss', not $ elem Underline ss],
         ["7" | Invert    <- ss', not $ elem Invert    ss],
         [show $ fc c | f@(FColour c) <- reverse ss',
                        [f] /= [f' | f'@(FColour _) <- reverse ss]],

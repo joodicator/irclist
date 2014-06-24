@@ -7,6 +7,8 @@ import System.IO
 import System.Exit
 import Network
 
+import IRC
+
 data Conf = Conf{
     cHost :: HostName,
     cPort :: PortNumber,
@@ -24,6 +26,9 @@ ircList' :: ReaderT Conf IO ()
 ircList' = do
     host <- asks cHost; port <- asks cPort
     h <- lift $ connectTo host (PortNumber port)
+    lift $ hSetEncoding h ircEncoding
+    lift $ hSetEncoding stdout ircEncoding
+    lift $ hSetEncoding stderr ircEncoding
     login h
     getList h
     lift $ ehPutStrLn h "QUIT"
@@ -59,10 +64,10 @@ getList h = do
 
 getList' :: Handle -> ReaderT Conf IO ()
 getList' h = do
-    msg <- lift $ parseMessage `fmap` ehGetLine h
-    case msg of
+    line <- lift $ ehGetLine h
+    case parseMessage line of
         (_,"322",_:a) -> do -- RPL_LIST
-            lift $ putStrLn $ intercalate "\t" $ a
+            lift $ putStrLn $ line
             getList' h
         (_,"323",_) -> do -- RPL_LISTEND
             return ()
@@ -71,16 +76,6 @@ getList' h = do
 misc :: (Maybe String, String, [String]) -> Handle -> ReaderT Conf IO ()
 misc (_,"PING",a) h = lift $ ehPutStrLn h $ unwords ["PONG", ':' : unwords a]
 misc _            _ = return ()
-
-parseMessage :: String -> (Maybe String, String, [String])
-parseMessage (':':l)
-  = (Just p, c, a)
-  where (p,s)   = break isSpace l
-        (_,c,a) = parseMessage (dropWhile isSpace s)
-parseMessage l
-  = (Nothing, c, a++[drop 1 z])
-  where (l',z) = break (== ':') l
-        c:a    = words l'
 
 ehPutStrLn :: Handle -> String -> IO ()
 ehPutStrLn h s = do

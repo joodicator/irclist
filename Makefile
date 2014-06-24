@@ -10,7 +10,7 @@ all: bin/RawList bin/FormatList
 bin/RawList: RawList.hs RawListLib.hs
 	$(GHC) $(_GHCFLAGS) -o $@ $<
 
-bin/FormatList: FormatList.hs
+bin/FormatList: FormatList.hs Format.hs
 	$(GHC) $(_GHCFLAGS) -o $@ $<
 
 .phony: clean

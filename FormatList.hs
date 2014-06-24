@@ -20,9 +20,3 @@ main = do
         return (count :: Integer, chan, formatANSI . unFormatIRC $ topic)
     forM_ ls $ \(n,c,t) -> do
         putStrLn $ intercalate "\t" [show n, c, t]
-
-split :: (a -> Bool) -> [a] -> [[a]]
-split _ [] = []
-split p xs
-  = ys : split p (drop 1 zs)
-  where (ys,zs) = break p xs

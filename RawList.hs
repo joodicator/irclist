@@ -5,7 +5,7 @@ import System.Environment
 import System.Exit
 import Network
 
-import IRCList
+import RawListLib
 
 main = getConf >>= ircList
 

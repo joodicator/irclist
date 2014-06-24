@@ -5,7 +5,12 @@ BINDIR := bin
 GHC := ghc --make
 _GHCFLAGS := $(GHCFLAGS) -O -hidir $(OBJDIR) -odir $(OBJDIR)
 
-bin/Main: Main.hs IRCList.hs
+all: bin/RawList bin/FormatList
+
+bin/RawList: RawList.hs RawListLib.hs
+	$(GHC) $(_GHCFLAGS) -o $@ $<
+
+bin/FormatList: FormatList.hs
 	$(GHC) $(_GHCFLAGS) -o $@ $<
 
 .phony: clean

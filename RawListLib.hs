@@ -1,4 +1,4 @@
-module IRCList(Conf(..), ircList) where
+module RawListLib(Conf(..), ircList) where
 
 import Data.List
 import Data.Char
@@ -25,14 +25,9 @@ ircList' = do
     host <- asks cHost; port <- asks cPort
     h <- lift $ connectTo host (PortNumber port)
     login h
-    l <- getList h
+    getList h
     lift $ ehPutStrLn h "QUIT"
     lift $ hClose h
-
-    let l'  = sortBy (\(_,m,_) (_,n,_) -> compare n m) l
-    let l'' = map (\(c,n,t) -> [c, show n, t]) l'
-    forM_ l'' $ \r -> do
-        lift $ putStrLn $ intercalate "\t" r
 
 login :: Handle -> ReaderT Conf IO ()
 login h = do
@@ -57,21 +52,20 @@ login'' h = do
     lift $ ehPutStrLn h $ unwords ["NICK", nick]
     withReaderT (\c -> c{cNick=nicks}) (login' h)
 
-getList :: Handle -> ReaderT Conf IO [(String,Integer,String)]
+getList :: Handle -> ReaderT Conf IO ()
 getList h = do
     lift $ ehPutStrLn h "LIST"
-    l <- getList' h
-    return [(chan, read count, unwords topic) | chan : count : topic <- l]
+    getList' h
 
-getList' :: Handle -> ReaderT Conf IO [[String]]
+getList' :: Handle -> ReaderT Conf IO ()
 getList' h = do
     msg <- lift $ parseMessage `fmap` ehGetLine h
     case msg of
         (_,"322",_:a) -> do -- RPL_LIST
-            l <- getList' h
-            return (a : l)
+            lift $ putStrLn $ intercalate "\t" $ a
+            getList' h
         (_,"323",_) -> do -- RPL_LISTEND
-            return []
+            return ()
         m -> misc m h >> getList' h
 
 misc :: (Maybe String, String, [String]) -> Handle -> ReaderT Conf IO ()

@@ -13,9 +13,9 @@ main = do
         l <- filter (/= '\r') `fmap` lines contents
         (chan,count',topic) <- return $ case parseMessage l of
             (_,_,[_,c,n,t]) -> (c,n,t)
-            _             -> error ("cannot parse: " ++ l)
+            _               -> error ("cannot parse: " ++ l)
         count <- return $ case [c | (c,"") <- reads count'] of
-            []  -> error ("cannot parse " ++ show count')
+            []  -> error ("cannot parse: " ++ show count')
             c:_ -> c
         return (count :: Integer, chan, formatANSI . unFormatIRC $ topic)
     forM_ ls $ \(n,c,t) -> do

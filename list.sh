@@ -1,3 +1,6 @@
 #!/bin/bash
 
-exec $(dirname $0)/bin/RawList "$@" 2>/dev/null | $(dirname $0)/view.sh
+DST=/tmp/irclist/"$1".list
+mkdir -p /tmp/irclist/ || exit
+"$(dirname $0)"/bin/RawList "$@" >"$DST" || exit
+exec "$(dirname $0)"/view.sh "$DST" || exit

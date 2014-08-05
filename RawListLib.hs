@@ -3,6 +3,7 @@ module RawListLib(Conf(..), ircList) where
 import Data.List
 import Data.Char
 import Control.Monad.Reader
+import Control.Concurrent
 import System.IO
 import System.Exit
 import Network
@@ -10,11 +11,12 @@ import Network
 import IRC
 
 data Conf = Conf{
-    cHost :: HostName,
-    cPort :: PortNumber,
-    cNick :: [String],
-    cUser :: String,
-    cReal :: String }
+    cHost         :: HostName,
+    cPort         :: PortNumber,
+    cNick         :: [String],
+    cUser         :: String,
+    cReal         :: String,
+    cDelaySeconds :: Int }
   deriving Show
 
 ircList :: Conf -> IO ()
@@ -30,6 +32,8 @@ ircList' = do
     lift $ hSetEncoding stdout ircEncoding
     lift $ hSetEncoding stderr ircEncoding
     login h
+    delaySeconds <- asks cDelaySeconds
+    lift $ threadDelay (1000000 * delaySeconds)
     getList h
     lift $ ehPutStrLn h "QUIT"
     lift $ hClose h

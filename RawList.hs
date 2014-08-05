@@ -3,6 +3,7 @@ import Data.Maybe
 import Data.Char
 import System.Environment
 import System.Exit
+import System.IO
 import Network
 
 import RawListLib
@@ -28,12 +29,18 @@ getConf' args = do
             p:_ -> return $ fromInteger p
             []  -> exitString $ "Error: invalid port " ++ show ps ++ "."
         _    -> exitUsage
+    delaySeconds <- case lookup "delay" nArgs of
+        Just ss -> case [s | (s,"") <- reads ss] of
+            s:_ | s >= 0 -> return s
+            []           -> exitString $ "Error: invalid delay " ++ show ss ++ "."
+        Nothing -> return 0
     let conf = Conf{
         cHost = host,
         cPort = port,
         cNick = [fromMaybe defaultNick $ lookup "nick" nArgs],
         cUser = fromMaybe defaultUser $ lookup "user" nArgs,
-        cReal = fromMaybe defaultReal $ lookup "real" nArgs }
+        cReal = fromMaybe defaultReal $ lookup "real" nArgs,
+        cDelaySeconds = delaySeconds }
     checkConf conf
     return conf
   where
@@ -63,5 +70,4 @@ exitUsage = do
                  " [--nick=NICK] [--user=USER] [--real=REAL]"
 
 exitString :: String -> IO a
-exitString s = putStrLn s >> exitFailure
-
+exitString s = hPutStrLn stderr s >> exitFailure

@@ -1,3 +1,3 @@
 #!/bin/bash
 
-exec cat "$@" | bin/FormatList | less -R -S -x6,32,40
+exec cat "$@" | "$(dirname $0)"/bin/FormatList | less -R -S -x6,28,36

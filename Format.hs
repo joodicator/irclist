@@ -136,7 +136,7 @@ ircColours = [
     (DBlack, 01), (DRed,     05), (DGreen, 03), (DYellow, 07),
     (DBlue,  02), (DMagenta, 06), (DCyan,  10), (DWhite,  15),
     (LBlack, 14), (LRed,     04), (LGreen, 09), (LYellow, 08),
-    (LBlue,  12), (LMagenta, 13), (LCyan,  14), (LWhite,  00)]
+    (LBlue,  12), (LMagenta, 13), (LCyan,  11), (LWhite,  00)]
 
 ansiColours :: [(Colour,Int)]
 ansiColours = [

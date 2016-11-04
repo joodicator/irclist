@@ -2,7 +2,8 @@ module RawListLib(Conf(..), ircList) where
 
 import Data.List
 import Data.Char
-import Control.Monad.Reader
+import Control.Monad.Trans.Class
+import Control.Monad.Trans.Reader
 import Control.Concurrent
 import System.IO
 import System.Exit
